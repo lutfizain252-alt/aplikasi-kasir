@@ -1,17 +1,22 @@
 <?php
-
+session_start();
 include "../config/koneksi.php";
 
-$id=$_GET['id'];
+if (!isset($_SESSION['nama']) || trim($_SESSION['nama']) == '') {
+    header("Location: ../login.php");
+    exit;
+}
 
-mysqli_query($conn,
+$id = mysqli_real_escape_string($conn, $_GET['id']);
+$username_aktif = $_SESSION['username'];
 
-"DELETE
+mysqli_query($conn, "DELETE FROM detail_transaksi WHERE id_barang = '$id'");
+$query_hapus = mysqli_query($conn, "DELETE FROM barang WHERE id = '$id' AND username = '$username_aktif'");
 
-FROM barang
-
-WHERE id='$id'");
-
-header("Location:index.php");
-
+if($query_hapus){
+    header("Location: index.php?status=sukses");
+} else {
+    header("Location: index.php?status=gagal");
+}
+exit;
 ?>

@@ -1,15 +1,12 @@
 <?php
-
 session_start();
 
-if(isset($_SESSION['nama'])){
-
+// Memastikan kode berhenti setelah header dipanggil agar tidak ada proses lain yang berjalan
+if(isset($_SESSION['nama']) && !empty($_SESSION['nama'])) {
     header("Location: dashboard.php");
-
-}else{
-
+    exit; // Penting untuk menambah 'exit' setelah setiap redirect
+} else {
     header("Location: login.php");
-
+    exit; // Penting untuk menambah 'exit' setelah setiap redirect
 }
-
 ?>

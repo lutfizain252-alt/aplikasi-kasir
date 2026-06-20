@@ -1,21 +1,27 @@
 <?php
-
+session_start();
 include "../config/koneksi.php";
 
-$id=$_GET['id'];
+// Proteksi halaman: Wajib login
+if (!isset($_SESSION['nama']) || trim($_SESSION['nama']) == '') {
+    header("Location: ../login.php");
+    exit;
+}
 
-mysqli_query(
+$id = mysqli_real_escape_string($conn, $_GET['id']);
+$username_aktif = $_SESSION['username'];
 
-$conn,
+// 1. Putus hubungan barang-barang yang memakai kategori ini
+mysqli_query($conn, "UPDATE barang SET id_kategori = NULL WHERE id_kategori = '$id' AND username = '$username_aktif'");
 
-"DELETE
+// 2. Hapus data kategori
+$hapus = mysqli_query($conn, "DELETE FROM kategori WHERE id = '$id' AND username = '$username_aktif'");
 
-FROM kategori
-
-WHERE id='$id'"
-
-);
-
-header("Location:index.php");
-
+// 3. Tambahkan status 'berhasil' agar notifikasi muncul di index.php
+if($hapus) {
+    header("Location: index.php?status=berhasil");
+} else {
+    header("Location: index.php?status=gagal");
+}
+exit;
 ?>
